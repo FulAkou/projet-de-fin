@@ -6,7 +6,6 @@ import Navbar from "./components/Navbar";
 import OfferForm from "./components/OfferForm";
 import APropos from "./pages/APropos";
 import CommentCaMarche from "./pages/CommentCaMarche";
-import Contact from "./pages/Contact";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import MyOffers from "./pages/MyOffers";
@@ -30,7 +29,6 @@ export default function App() {
           <Route path="/mes-offres/nouvelle" element={<OfferForm />} />
           <Route path="/mes-offres/modifier/:id" element={<OfferForm />} />
           <Route path="/mes-reservations" element={<MyReservations />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/comment-ca-marche" element={<CommentCaMarche />} />
           <Route path="/a-propos" element={<APropos />} />
         </Routes>
