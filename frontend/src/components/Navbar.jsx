@@ -36,7 +36,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16 lg:h-18">
           {/* Logo et liens principaux */}
-          <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-8">
+          <div className="flex items-center  space-x-2 sm:space-x-4 lg:space-x-8">
             <Link to="/" className="flex-shrink-0 flex items-center group">
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 group-hover:text-green-800 transition-colors duration-200">
                 FoodShare

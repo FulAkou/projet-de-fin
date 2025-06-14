@@ -2,6 +2,7 @@ import {
   CalendarIcon,
   MapPinIcon,
   UserIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -11,6 +12,8 @@ export default function MyReservations() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedReservationId, setSelectedReservationId] = useState(null);
 
   useEffect(() => {
     const fetchMyReservations = async () => {
@@ -27,17 +30,27 @@ export default function MyReservations() {
     fetchMyReservations();
   }, []);
 
-  const handleCancel = async (id) => {
-    if (
-      window.confirm("Êtes-vous sûr de vouloir annuler cette réservation ?")
-    ) {
-      try {
-        await api.delete(`/reservations/${id}`);
-        setReservations(reservations.filter((res) => res._id !== id));
-      } catch (err) {
-        setError("Erreur lors de l'annulation de la réservation");
-      }
+  const handleCancelClick = (id) => {
+    setSelectedReservationId(id);
+    setShowModal(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    try {
+      await api.delete(`/reservations/${selectedReservationId}`);
+      setReservations(
+        reservations.filter((res) => res._id !== selectedReservationId)
+      );
+      setShowModal(false);
+      setSelectedReservationId(null);
+    } catch (err) {
+      setError("Erreur lors de l'annulation de la réservation");
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedReservationId(null);
   };
 
   const formatDate = (date) => {
@@ -120,7 +133,7 @@ export default function MyReservations() {
                       Voir les détails
                     </Link>
                     <button
-                      onClick={() => handleCancel(reservation._id)}
+                      onClick={() => handleCancelClick(reservation._id)}
                       className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
                     >
                       Annuler
@@ -132,6 +145,42 @@ export default function MyReservations() {
           </div>
         )}
       </div>
+
+      {/* Modal de confirmation */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Confirmer l'annulation
+              </h3>
+              <button
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+            <p className="text-gray-500 mb-6">
+              Êtes-vous sûr de vouloir annuler cette réservation ?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={handleCloseModal}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+              >
+                Non, garder
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
+              >
+                Oui, annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

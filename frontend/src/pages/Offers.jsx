@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import OfferCard from "../components/OfferCard";
 
@@ -7,6 +7,8 @@ export default function Offers() {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const isAuthenticated = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchOffers = async () => {
@@ -22,6 +24,13 @@ export default function Offers() {
 
     fetchOffers();
   }, []);
+
+  const handleCreateOfferClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate("/login");
+    }
+  };
 
   if (loading) {
     return (
@@ -48,6 +57,7 @@ export default function Offers() {
           </h1>
           <Link
             to="/creer-offre"
+            onClick={handleCreateOfferClick}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
           >
             Créer une offre
