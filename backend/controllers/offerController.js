@@ -5,21 +5,14 @@ const Offer = require("../models/Offer");
 // @access  Private
 const createOffer = async (req, res) => {
   try {
-    const {
-      titre,
-      description,
-      image,
-      dateExpiration,
-      quantite,
-      localisation,
-    } = req.body;
+    const { titre, description, image, dateExpiration, localisation } =
+      req.body;
 
     const offer = await Offer.create({
       titre,
       description,
       image,
       dateExpiration,
-      quantite,
       localisation,
       userId: req.user._id,
     });

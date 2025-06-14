@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import api from "../api/axios";
 import OfferCard from "../components/OfferCard";
 
@@ -7,6 +8,9 @@ export default function MyOffers() {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [offerToDelete, setOfferToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchMyOffers = async () => {
@@ -23,15 +27,38 @@ export default function MyOffers() {
     fetchMyOffers();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) {
-      try {
-        await api.delete(`/offers/${id}`);
-        setOffers(offers.filter((offer) => offer._id !== id));
-      } catch (err) {
-        setError("Erreur lors de la suppression de l'offre");
-      }
+  const handleDelete = (id) => {
+    setOfferToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!offerToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      // Appel à l'API pour supprimer l'offre
+      await api.delete(`/offers/${offerToDelete}`);
+
+      // Mise à jour de la liste des offres en filtrant l'offre supprimée
+      setOffers((currentOffers) =>
+        currentOffers.filter((offer) => offer._id !== offerToDelete)
+      );
+
+      toast.success("L'offre a été supprimée avec succès");
+      setShowDeleteModal(false);
+    } catch (err) {
+      console.error("Erreur lors de la suppression:", err);
+      toast.error("Erreur lors de la suppression de l'offre");
+    } finally {
+      setIsDeleting(false);
+      setOfferToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setOfferToDelete(null);
   };
 
   if (loading) {
@@ -76,14 +103,14 @@ export default function MyOffers() {
                 <OfferCard offer={offer} />
                 <div className="absolute top-4 right-4 space-x-2">
                   <Link
-                    to={`/modifier-offre/${offer._id}`}
+                    to={`/mes-offres/modifier/${offer._id}`}
                     className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
                   >
                     Modifier
                   </Link>
                   <button
                     onClick={() => handleDelete(offer._id)}
-                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
+                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                   >
                     Supprimer
                   </button>
@@ -93,6 +120,37 @@ export default function MyOffers() {
           </div>
         )}
       </div>
+
+      {/* Modal de confirmation de suppression */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Confirmer la suppression
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Êtes-vous sûr de vouloir supprimer cette offre ? Cette action est
+              irréversible.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={cancelDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 border border-transparent rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              >
+                {isDeleting ? "Suppression..." : "Supprimer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

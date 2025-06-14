@@ -19,11 +19,6 @@ const offerSchema = mongoose.Schema(
       type: Date,
       required: [true, "La date d'expiration est requise"],
     },
-    quantite: {
-      type: Number,
-      required: [true, "La quantité est requise"],
-      min: [1, "La quantité doit être supérieure à 0"],
-    },
     localisation: {
       type: String,
       required: [true, "La localisation est requise"],

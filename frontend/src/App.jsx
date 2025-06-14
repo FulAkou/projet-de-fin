@@ -24,6 +24,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/offres" element={<Offers />} />
+          <Route path="/creer-offre" element={<OfferForm />} />
           <Route path="/offres/:id" element={<OfferDetails />} />
           <Route path="/mes-offres" element={<MyOffers />} />
           <Route path="/mes-offres/nouvelle" element={<OfferForm />} />
