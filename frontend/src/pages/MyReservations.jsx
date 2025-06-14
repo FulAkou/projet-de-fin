@@ -37,7 +37,18 @@ export default function MyReservations() {
 
   const handleConfirmCancel = async () => {
     try {
+      // Récupérer l'ID de l'offre avant de supprimer la réservation
+      const reservationToCancel = reservations.find(
+        (res) => res._id === selectedReservationId
+      );
+      if (!reservationToCancel) {
+        throw new Error("Réservation non trouvée");
+      }
+
+      // Supprimer la réservation (le backend s'occupera de mettre à jour le statut de l'offre)
       await api.delete(`/reservations/${selectedReservationId}`);
+
+      // Mettre à jour l'état local
       setReservations(
         reservations.filter((res) => res._id !== selectedReservationId)
       );

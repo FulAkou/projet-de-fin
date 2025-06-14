@@ -114,7 +114,7 @@ const cancelReservation = async (req, res) => {
     await offer.save();
 
     // Supprimer la réservation
-    await reservation.remove();
+    await Reservation.deleteOne({ _id: reservation._id });
 
     res.json({ message: "Réservation annulée" });
   } catch (error) {
